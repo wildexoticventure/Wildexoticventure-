@@ -1,0 +1,1371 @@
+import React, { useState, useMemo } from 'react';
+import {
+  Compass,
+  MapPin,
+  Calendar,
+  Users,
+  Search,
+  Phone,
+  PhoneCall,
+  MessageCircle,
+  Star,
+  ShieldCheck,
+  Camera,
+  Coffee,
+  Sparkles,
+  ChevronRight,
+  X,
+  CheckCircle2,
+  Clock,
+  Car,
+  Award,
+  Layers,
+  Heart,
+  Filter,
+  ArrowRight,
+  ExternalLink,
+  Info,
+  Send
+} from 'lucide-react';
+
+const AGENCY_PHONE_RAW = '9201761658';
+const AGENCY_PHONE_DISPLAY = '+91 9201761658';
+const AGENCY_WHATSAPP_LINK = '919201761658';
+
+const NATIONAL_PARKS = [
+  { id: 'all', name: 'All National Parks' },
+  { id: 'kanha', name: 'Kanha National Park', state: 'Madhya Pradesh', signature: 'Barasingha & Sal Meadows' },
+  { id: 'bandhavgarh', name: 'Bandhavgarh National Park', state: 'Madhya Pradesh', signature: 'Highest Royal Bengal Density' },
+  { id: 'pench', name: 'Pench Tiger Reserve', state: 'Madhya Pradesh / MH', signature: 'Mowgli’s Classic Wilderness' },
+  { id: 'ranthambore', name: 'Ranthambore National Park', state: 'Rajasthan', signature: 'Ancient Forts & Royal Lakes' },
+  { id: 'corbett', name: 'Jim Corbett National Park', state: 'Uttarakhand', signature: 'Foothill Elephants & Dense Sal' },
+  { id: 'tadoba', name: 'Tadoba Andhari Reserve', state: 'Maharashtra', signature: 'The Jewel of Vidarbha' }
+];
+
+const RESORTS_DATA = [
+  {
+    id: 'resort-1',
+    type: 'resort',
+    title: 'The Royal Tala Machan & Forest Villas',
+    parkId: 'bandhavgarh',
+    parkName: 'Bandhavgarh (Tala Zone)',
+    rating: 4.96,
+    reviewsCount: 142,
+    pricePerNight: 34500,
+    coverImg: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80'
+    ],
+    tag: 'Ultra-Luxury Jungle Villa',
+    amenities: ['Private Heated Plunge Pool', 'Elevated Tree Machan', 'Private Butler', 'Bush Dinner Experience', 'Ayurvedic Forest Spa'],
+    desc: 'Perched right along the edge of Bandhavgarh’s Tala zone buffer, featuring reclaimed teakwood architectural suites, an open-to-sky shower, and an elevated observation deck for nocturnal wildlife observation.'
+  },
+  {
+    id: 'resort-2',
+    type: 'resort',
+    title: 'Singinawa Meadows & Sanctuary Lodge',
+    parkId: 'kanha',
+    parkName: 'Kanha (Mukki Gate)',
+    rating: 4.98,
+    reviewsCount: 188,
+    pricePerNight: 29000,
+    coverImg: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1200&q=80'
+    ],
+    tag: 'Eco-Luxury Heritage Lodge',
+    amenities: ['Private Verandah overlooking Grasslands', 'Tribal Art Gallery', 'Botanical Trail', 'Pool with Forest Vistas', 'Expert Naturalist Team'],
+    desc: 'Sprawling over 110 pristine acres of regenerated woodland bordering Kanha National Park. Designed with authentic stone architecture, offering quiet luxury and unmatched birdwatching.'
+  },
+  {
+    id: 'resort-3',
+    type: 'resort',
+    title: 'Baghvan Wilderness Tented Pavilions',
+    parkId: 'pench',
+    parkName: 'Pench (Turia Gate)',
+    rating: 4.93,
+    reviewsCount: 96,
+    pricePerNight: 38000,
+    coverImg: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80'
+    ],
+    tag: 'Signature Machan Suites',
+    amenities: ['Rooftop Star Gazing Machan', 'Private Forest Courtyard', 'Al Fresco Bush Lantern Dinners', 'Infinity Jungle Pool'],
+    desc: 'Nestled by a dry riverbed adjacent to Pench, individual standalone suites offer rooftop machans equipped with luxury daybeds and mosquito netting for sleeping under the stars.'
+  },
+  {
+    id: 'resort-4',
+    type: 'resort',
+    title: 'The Sawai Fortress & Royal Camp',
+    parkId: 'ranthambore',
+    parkName: 'Ranthambore (Zone 1-5 Access)',
+    rating: 4.95,
+    reviewsCount: 210,
+    pricePerNight: 42000,
+    coverImg: 'https://images.unsplash.com/photo-1561501900-3701fa6a0864?auto=format&fit=crop&w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1561501900-3701fa6a0864?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80'
+    ],
+    tag: 'Regal Safari Palace',
+    amenities: ['Custom Royal Tents', 'Fine Rajasthani Dining', 'Private Naturalist Sessions', 'Traditional Folk Performances', 'Lounge Bar'],
+    desc: 'Experience safari in the grand manner of royalty. Hand-stitched embroidered canopies, antique colonial brass furnishings, and bespoke safari tracking.'
+  }
+];
+
+const PACKAGES_DATA = [
+  {
+    id: 'pkg-1',
+    type: 'package',
+    title: 'The Royal Bengal Sovereign Expedition',
+    parkId: 'bandhavgarh',
+    parkName: 'Bandhavgarh Tiger Reserve',
+    duration: '3 Nights / 4 Days',
+    price: 98000,
+    coverImg: 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=1200&q=80',
+    badge: 'Signature Expedition',
+    highlights: [
+      '4 Exclusive 4x4 Gypsy Safaris (Tala & Magadhi Zones)',
+      'Stay in 5-Star Private Plunge Pool Jungle Villa',
+      'Senior Field Biologist & Master Wildlife Tracker',
+      'Airport Pick & Drop from Jabalpur in Luxury SUV',
+      'Bush Lantern Private Dinner & High Tea on Hilltop'
+    ],
+    desc: 'Designed for discerning travelers who demand optimal big cat sighting frequency combined with premier five-star hospitality.'
+  },
+  {
+    id: 'pkg-2',
+    type: 'package',
+    title: 'Kanha Forest Odyssey & Barasingha Trail',
+    parkId: 'kanha',
+    parkName: 'Kanha National Park',
+    duration: '4 Nights / 5 Days',
+    price: 115000,
+    coverImg: 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?auto=format&fit=crop&w=1200&q=80',
+    badge: 'Popular for Photographers',
+    highlights: [
+      '5 Core Zone Safaris across Mukki and Kanha Gate',
+      'Dedicated Professional Gimbal & Beanbag mount Gypsy',
+      'Heritage Forest Villa with all meals crafted by master chef',
+      'Guided Nature Walks with Baiga tribal trackers',
+      'Evening Wildlife Documentary & Discussion forum'
+    ],
+    desc: 'Immerse into the dense Sal forests and open meadows that inspired Kipling. Exceptional photography prospects.'
+  },
+  {
+    id: 'pkg-3',
+    type: 'package',
+    title: 'Corbett Footprint & Elephant Corridor',
+    parkId: 'corbett',
+    parkName: 'Jim Corbett National Park',
+    duration: '3 Nights / 4 Days',
+    price: 76000,
+    coverImg: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=1200&q=80',
+    badge: 'Wilderness Retreat',
+    highlights: [
+      'Dhikala & Bijrani Zone Priority Gypsy Safaris',
+      'Riverside Boutique Cottage Stay overlooking Kosi river',
+      'Private Angling & Birding excursion with top ornithologist',
+      'Luxury Transfers from Delhi NCR / Dehradun Airport'
+    ],
+    desc: 'Spectacular wilderness in the Himalayan foothills where majestic wild elephants roam alongside elusive apex predators.'
+  }
+];
+
+const SAFARI_ZONES_CONFIG = {
+  kanha: {
+    gates: ['Mukki Core Zone', 'Kanha Core Zone', 'Kisli Core Zone', 'Sarhi Buffer Zone', 'Khatiya Buffer Zone'],
+    rates: { gypsy: 10500, canter: 3200 }
+  },
+  bandhavgarh: {
+    gates: ['Tala Core Zone (VIP Premium)', 'Magadhi Core Zone', 'Khitauli Core Zone', 'Dhamokhar Buffer', 'Johila Buffer'],
+    rates: { gypsy: 12500, canter: 3500 }
+  },
+  pench: {
+    gates: ['Turia Core Gate', 'Karmajhiri Core Gate', 'Jamtara Core', 'Rukhad Buffer (Night Safari)', 'Telia Buffer'],
+    rates: { gypsy: 9500, canter: 2800 }
+  },
+  ranthambore: {
+    gates: ['Zones 1 to 5 (Prime Lake Zones)', 'Zones 6 to 10 (High Cliffs)', 'Khandar Buffer'],
+    rates: { gypsy: 11000, canter: 3000 }
+  },
+  corbett: {
+    gates: ['Dhikala Zone (Royal Sal Forest)', 'Bijrani Zone', 'Jhirna Zone', 'Dhela Zone'],
+    rates: { gypsy: 10000, canter: 2900 }
+  },
+  tadoba: {
+    gates: ['Moharli Core Gate', 'Kolara Core Gate', 'Navegaon Core Gate', 'Junona Buffer Zone'],
+    rates: { gypsy: 10500, canter: 3100 }
+  }
+};
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('all');
+  const [selectedPark, setSelectedPark] = useState('all');
+  const [guestCount, setGuestCount] = useState(2);
+  const [searchDate, setSearchDate] = useState('2026-11-15');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Safari Customizer State
+  const [safariPark, setSafariPark] = useState('bandhavgarh');
+  const [safariZone, setSafariZone] = useState('Tala Core Zone (VIP Premium)');
+  const [safariSlot, setSafariSlot] = useState('morning');
+  const [safariVehicle, setSafariVehicle] = useState('gypsy');
+  const [naturalistAddon, setNaturalistAddon] = useState(true);
+
+  // Inquiry & Booking Modal
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalItem, setModalItem] = useState(null);
+  const [guestName, setGuestName] = useState('');
+  const [guestPhone, setGuestPhone] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
+  const [customNote, setCustomNote] = useState('');
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+
+  // Detail Modal
+  const [detailModalItem, setDetailModalItem] = useState(null);
+
+  const currentSafariRate = useMemo(() => {
+    const config = SAFARI_ZONES_CONFIG[safariPark] || SAFARI_ZONES_CONFIG.bandhavgarh;
+    const baseVehiclePrice = config.rates[safariVehicle] || 10500;
+    const slotMultiplier = safariSlot === 'night' ? 1.25 : 1.0;
+    const naturalistFee = naturalistAddon ? 3500 : 0;
+    return Math.round((baseVehiclePrice * slotMultiplier) + naturalistFee);
+  }, [safariPark, safariSlot, safariVehicle, naturalistAddon]);
+
+  const handleSafariParkChange = (parkKey) => {
+    setSafariPark(parkKey);
+    const zones = SAFARI_ZONES_CONFIG[parkKey]?.gates;
+    if (zones && zones.length > 0) {
+      setSafariZone(zones[0]);
+    }
+  };
+
+  const filteredResorts = useMemo(() => {
+    if (selectedPark === 'all') return RESORTS_DATA;
+    return RESORTS_DATA.filter((r) => r.parkId === selectedPark);
+  }, [selectedPark]);
+
+  const filteredPackages = useMemo(() => {
+    if (selectedPark === 'all') return PACKAGES_DATA;
+    return PACKAGES_DATA.filter((p) => p.parkId === selectedPark);
+  }, [selectedPark]);
+
+  const handleOpenBooking = (item) => {
+    setModalItem(item);
+    setBookingSuccess(false);
+    setModalOpen(true);
+  };
+
+  const handleSendWhatsApp = (itemOrCustom) => {
+    let text = `*Wildexoticventure Luxury Safari Inquiry*%0A`;
+    text += `*Official Agency Desk:* ${AGENCY_PHONE_DISPLAY}%0A%0A`;
+
+    if (itemOrCustom?.type === 'resort') {
+      text += `*Destination:* ${itemOrCustom.parkName}%0A*Resort:* ${itemOrCustom.title}%0A*Tariff:* ₹${itemOrCustom.pricePerNight?.toLocaleString()}/night%0A`;
+    } else if (itemOrCustom?.type === 'package') {
+      text += `*Expedition Package:* ${itemOrCustom.title}%0A*Duration:* ${itemOrCustom.duration}%0A*Price:* ₹${itemOrCustom.price?.toLocaleString()}%0A`;
+    } else if (itemOrCustom?.type === 'safari_engine') {
+      text += `*Custom Safari Booking:*%0A*Park:* ${safariPark.toUpperCase()}%0A*Zone:* ${safariZone}%0A*Slot:* ${safariSlot.toUpperCase()}%0A*Vehicle:* ${safariVehicle === 'gypsy' ? 'Exclusive 4x4 Gypsy' : 'Canter'}%0A*Naturalist:* ${naturalistAddon ? 'Included (VIP)' : 'Standard'}%0A*Est Tariff:* ₹${currentSafariRate.toLocaleString()}%0A`;
+    } else {
+      text += `Hello Wildexoticventure! I want to plan a luxury wildlife stay and jungle safari with your agency (Kanha / Bandhavgarh / Pench).%0A`;
+    }
+
+    if (guestName) text += `*Guest Name:* ${encodeURIComponent(guestName)}%0A`;
+    if (guestPhone) text += `*Guest Contact:* ${encodeURIComponent(guestPhone)}%0A`;
+    if (searchDate) text += `*Target Date:* ${searchDate}%0A`;
+    if (guestCount) text += `*Pax:* ${guestCount}%0A`;
+    if (customNote) text += `*Special Notes:* ${encodeURIComponent(customNote)}%0A`;
+
+    text += `%0APlease verify core zone permit availability & share luxury itinerary options.`;
+    window.open(`https://wa.me/${AGENCY_WHATSAPP_LINK}?text=${text}`, '_blank');
+  };
+
+  const handleSubmitInquiry = (e) => {
+    e.preventDefault();
+    if (!guestName || !guestPhone) return;
+    setBookingSuccess(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#071711] text-[#f2efe9] font-sans antialiased selection:bg-[#d4af37] selection:text-[#0b2318] relative pb-20 sm:pb-0">
+      
+      {}
+      <div className="bg-[#0b2318] border-b border-[#224434] py-2 px-4 text-xs md:text-sm text-[#d4af37]">
+        <div className="max-w-7xl mx-auto w-full flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center space-x-2 truncate">
+            <span className="flex h-2 w-2 rounded-full bg-[#d4af37] animate-ping" />
+            <span className="tracking-wider uppercase font-semibold">Wildexoticventure VIP Desk:</span>
+            <span className="hidden sm:inline text-[#e4dcc7]">Guaranteed VIP Permits for Kanha & Bandhavgarh.</span>
+          </div>
+          <div className="flex items-center space-x-4 font-mono text-xs ml-auto">
+            <a
+              href={`tel:+91${AGENCY_PHONE_RAW}`}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#133827] text-white hover:text-[#d4af37] border border-[#2b5940] transition"
+              title="Call Wildexoticventure"
+            >
+              <PhoneCall className="w-3.5 h-3.5 text-[#d4af37]" />
+              <span className="font-bold tracking-wide">{AGENCY_PHONE_DISPLAY}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {}
+      <header className="sticky top-0 z-40 bg-[#071711]/95 backdrop-blur-md border-b border-[#1b3d2c]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          {/* Logo & Tagline */}
+          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setActiveTab('all')}>
+            <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-[#d4af37] to-[#8f7422] p-0.5 shadow-lg shadow-black/40">
+              <div className="w-full h-full bg-[#0b2318] rounded-[7px] flex items-center justify-center">
+                <Compass className="w-6 h-6 text-[#d4af37]" />
+              </div>
+            </div>
+            <div>
+              <div className="font-serif tracking-widest text-xl sm:text-2xl font-bold uppercase text-white">
+                Wild<span className="text-[#d4af37]">exotic</span>venture
+              </div>
+              <p className="text-[10px] tracking-widest uppercase text-[#9ea79f] hidden sm:block">
+                Exclusive Luxury Stays & Safari Expeditions
+              </p>
+            </div>
+          </div>
+
+          {/* Desktop Nav Items */}
+          <nav className="hidden lg:flex items-center space-x-8 text-sm font-medium">
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`transition pb-1 ${activeTab === 'all' ? 'text-[#d4af37] border-b-2 border-[#d4af37]' : 'text-gray-300 hover:text-white'}`}
+            >
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab('resorts')}
+              className={`transition pb-1 ${activeTab === 'resorts' ? 'text-[#d4af37] border-b-2 border-[#d4af37]' : 'text-gray-300 hover:text-white'}`}
+            >
+              Luxury Resorts
+            </button>
+            <button
+              onClick={() => setActiveTab('safaris')}
+              className={`transition pb-1 ${activeTab === 'safaris' ? 'text-[#d4af37] border-b-2 border-[#d4af37]' : 'text-gray-300 hover:text-white'}`}
+            >
+              Safari Permit Engine
+            </button>
+            <button
+              onClick={() => setActiveTab('packages')}
+              className={`transition pb-1 ${activeTab === 'packages' ? 'text-[#d4af37] border-b-2 border-[#d4af37]' : 'text-gray-300 hover:text-white'}`}
+            >
+              Bespoke Expeditions
+            </button>
+          </nav>
+
+          {/* Contact Direct CTAs */}
+          <div className="hidden sm:flex items-center space-x-2.5">
+            <a
+              href={`tel:+91${AGENCY_PHONE_RAW}`}
+              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-[#0e2c1e] hover:bg-[#163f2c] text-white text-xs font-semibold tracking-wide border border-[#2b5940] transition"
+            >
+              <Phone className="w-3.5 h-3.5 text-[#d4af37]" />
+              <span>Call: {AGENCY_PHONE_DISPLAY}</span>
+            </a>
+            <button
+              onClick={() => handleSendWhatsApp({ type: 'general' })}
+              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-[#1b3d2c] hover:bg-[#23503a] text-[#4ade80] text-xs font-semibold tracking-wide border border-[#2b5940] transition"
+            >
+              <MessageCircle className="w-4 h-4 fill-current" />
+              <span>WhatsApp</span>
+            </button>
+            <button
+              onClick={() => handleOpenBooking({ type: 'general', title: 'Custom Wildlife Itinerary' })}
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-[#d4af37] to-[#b38f28] hover:brightness-110 text-[#0b2318] text-xs font-bold tracking-wider uppercase transition shadow-md shadow-[#d4af37]/20"
+            >
+              Book Now
+            </button>
+          </div>
+
+          {/* Mobile Actions */}
+          <div className="lg:hidden flex items-center space-x-2">
+            <a
+              href={`tel:+91${AGENCY_PHONE_RAW}`}
+              className="p-2 rounded-lg bg-[#113524] text-[#d4af37] border border-[#23543b]"
+              aria-label="Call Owner"
+            >
+              <Phone className="w-4 h-4" />
+            </a>
+            <button
+              onClick={() => handleSendWhatsApp({ type: 'general' })}
+              className="p-2 rounded-lg bg-[#1b3d2c] text-[#4ade80]"
+              aria-label="WhatsApp"
+            >
+              <MessageCircle className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg bg-[#0f2d24] text-white"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Filter className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-[#0a1f16] border-b border-[#1b3d2c] px-4 pt-3 pb-5 space-y-3">
+            <div className="grid grid-cols-2 gap-2 text-center text-sm">
+              <button
+                onClick={() => { setActiveTab('all'); setMobileMenuOpen(false); }}
+                className={`py-2 rounded-lg border ${activeTab === 'all' ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-[#1b3d2c] text-white'}`}
+              >
+                All Experiences
+              </button>
+              <button
+                onClick={() => { setActiveTab('resorts'); setMobileMenuOpen(false); }}
+                className={`py-2 rounded-lg border ${activeTab === 'resorts' ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-[#1b3d2c] text-white'}`}
+              >
+                Luxury Lodges
+              </button>
+              <button
+                onClick={() => { setActiveTab('safaris'); setMobileMenuOpen(false); }}
+                className={`py-2 rounded-lg border ${activeTab === 'safaris' ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-[#1b3d2c] text-white'}`}
+              >
+                Permit Engine
+              </button>
+              <button
+                onClick={() => { setActiveTab('packages'); setMobileMenuOpen(false); }}
+                className={`py-2 rounded-lg border ${activeTab === 'packages' ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-[#1b3d2c] text-white'}`}
+              >
+                Expeditions
+              </button>
+            </div>
+            <div className="pt-2 border-t border-[#183a29] flex flex-col gap-2">
+              <a
+                href={`tel:+91${AGENCY_PHONE_RAW}`}
+                className="w-full py-2.5 rounded-lg bg-[#143a28] text-white text-center text-xs font-semibold flex items-center justify-center gap-2 border border-[#27593f]"
+              >
+                <Phone className="w-4 h-4 text-[#d4af37]" /> Call Direct: {AGENCY_PHONE_DISPLAY}
+              </a>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleSendWhatsApp({ type: 'general' });
+                }}
+                className="w-full py-2.5 rounded-lg bg-[#25d366] text-black text-center text-xs font-bold flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="w-4 h-4" /> Message on WhatsApp
+              </button>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {}
+      <section className="relative overflow-hidden py-16 md:py-24 px-4 sm:px-6 lg:px-8 border-b border-[#143525]">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://images.unsplash.com/photo-1549366021-9f761d450615?auto=format&fit=crop&w=1920&q=80"
+            alt="Wild tiger in natural habitat"
+            className="w-full h-full object-cover opacity-20 scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#071711] via-[#071711]/90 to-transparent" />
+        </div>
+
+        <div className="relative z-10 max-w-5xl mx-auto text-center space-y-6">
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#103022]/80 border border-[#d4af37]/40 text-[#d4af37] text-xs font-medium uppercase tracking-widest backdrop-blur-md">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Wildexoticventure • Direct Reservations</span>
+          </div>
+
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-white tracking-tight leading-tight">
+            Untamed Wilderness.<br />
+            <span className="bg-gradient-to-r from-[#e7d188] via-[#d4af37] to-[#aa8929] bg-clip-text text-transparent">
+              Uncompromising Luxury.
+            </span>
+          </h1>
+
+          <p className="max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-[#b7c4bd] leading-relaxed">
+            From the misty sal valleys of <span className="text-[#f1dec0] font-medium">Kanha</span> & the regal predator bastions of <span className="text-[#f1dec0] font-medium">Bandhavgarh</span>, to <span className="text-[#f1dec0] font-medium">Pench & Ranthambore</span>. Private safaris, guaranteed permits & luxury jungle pool villas.
+          </p>
+
+          {/* Quick contact tag */}
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-[#0c2419] border border-[#234e38] text-xs text-gray-300">
+            <span className="text-[#d4af37] font-semibold">Immediate Assistance:</span>
+            <a href={`tel:+91${AGENCY_PHONE_RAW}`} className="text-white hover:text-[#d4af37] font-mono font-bold flex items-center gap-1">
+              <Phone className="w-3.5 h-3.5 text-[#d4af37]" /> {AGENCY_PHONE_DISPLAY}
+            </a>
+          </div>
+
+          {/* Search Filter Strip */}
+          <div className="mt-8 bg-[#0b2419]/90 border border-[#214a36] rounded-2xl p-4 sm:p-5 shadow-2xl backdrop-blur-md text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#d4af37] mb-1.5 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-[#d4af37]" /> Reserve
+                </label>
+                <select
+                  value={selectedPark}
+                  onChange={(e) => setSelectedPark(e.target.value)}
+                  className="w-full bg-[#06150f] border border-[#1b3d2c] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#d4af37] transition"
+                >
+                  {NATIONAL_PARKS.map((park) => (
+                    <option key={park.id} value={park.id}>
+                      {park.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#d4af37] mb-1.5 flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-[#d4af37]" /> Experience Type
+                </label>
+                <select
+                  value={activeTab}
+                  onChange={(e) => setActiveTab(e.target.value)}
+                  className="w-full bg-[#06150f] border border-[#1b3d2c] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#d4af37] transition"
+                >
+                  <option value="all">All Wilderness Stays & Safaris</option>
+                  <option value="resorts">Luxury Forest Lodges</option>
+                  <option value="safaris">Core Zone Safari Permits</option>
+                  <option value="packages">Complete Curated Expeditions</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#d4af37] mb-1.5 flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-[#d4af37]" /> Expedition Dates
+                </label>
+                <input
+                  type="date"
+                  value={searchDate}
+                  onChange={(e) => setSearchDate(e.target.value)}
+                  className="w-full bg-[#06150f] border border-[#1b3d2c] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#d4af37] transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#d4af37] mb-1.5 flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-[#d4af37]" /> Travelers
+                </label>
+                <select
+                  value={guestCount}
+                  onChange={(e) => setGuestCount(Number(e.target.value))}
+                  className="w-full bg-[#06150f] border border-[#1b3d2c] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#d4af37] transition"
+                >
+                  <option value={1}>1 Solo Explorer</option>
+                  <option value={2}>2 Guests (Couples Suite)</option>
+                  <option value={4}>4 Guests (Family Machan)</option>
+                  <option value={6}>6+ Guests (Private Gypsy Group)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-[#183929] flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center space-x-2 text-gray-400">
+                <span className="font-semibold text-[#d4af37]">Quick Select:</span>
+                <button
+                  onClick={() => setSelectedPark('bandhavgarh')}
+                  className="px-2.5 py-1 rounded bg-[#10291e] hover:bg-[#163a2a] text-gray-300 transition"
+                >
+                  Bandhavgarh
+                </button>
+                <button
+                  onClick={() => setSelectedPark('kanha')}
+                  className="px-2.5 py-1 rounded bg-[#10291e] hover:bg-[#163a2a] text-gray-300 transition"
+                >
+                  Kanha
+                </button>
+                <button
+                  onClick={() => setSelectedPark('pench')}
+                  className="px-2.5 py-1 rounded bg-[#10291e] hover:bg-[#163a2a] text-gray-300 transition"
+                >
+                  Pench
+                </button>
+                <button
+                  onClick={() => setSelectedPark('ranthambore')}
+                  className="px-2.5 py-1 rounded bg-[#10291e] hover:bg-[#163a2a] text-gray-300 transition"
+                >
+                  Ranthambore
+                </button>
+              </div>
+
+              <div>
+                <button
+                  onClick={() => setSelectedPark('all')}
+                  className="text-xs text-[#d4af37] underline underline-offset-4 hover:text-white"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {}
+      <section className="bg-[#0b2016] border-b border-[#183a29] py-6 px-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div className="flex flex-col items-center space-y-1.5 p-2">
+            <div className="p-2.5 rounded-full bg-[#133224] text-[#d4af37]">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Guaranteed Permits</h4>
+            <p className="text-[11px] text-gray-400">Authorized booking for Tala, Mukki & core gates</p>
+          </div>
+
+          <div className="flex flex-col items-center space-y-1.5 p-2">
+            <div className="p-2.5 rounded-full bg-[#133224] text-[#d4af37]">
+              <Camera className="w-5 h-5" />
+            </div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Master Trackers</h4>
+            <p className="text-[11px] text-gray-400">Naturalists with 15+ yrs big-cat tracking skills</p>
+          </div>
+
+          <div className="flex flex-col items-center space-y-1.5 p-2">
+            <div className="p-2.5 rounded-full bg-[#133224] text-[#d4af37]">
+              <Car className="w-5 h-5" />
+            </div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Private 4x4 Gypsies</h4>
+            <p className="text-[11px] text-gray-400">No stranger sharing; custom photography mounts</p>
+          </div>
+
+          <div className="flex flex-col items-center space-y-1.5 p-2">
+            <div className="p-2.5 rounded-full bg-[#133224] text-[#d4af37]">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Direct Line</h4>
+            <p className="text-[11px] text-[#d4af37] font-mono font-semibold">{AGENCY_PHONE_DISPLAY}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content Sections */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+        
+        {}
+        {(activeTab === 'all' || activeTab === 'safaris') && (
+          <section className="bg-gradient-to-br from-[#0c261a] to-[#071911] border border-[#214a36] rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl relative overflow-hidden">
+            <div className="max-w-2xl">
+              <span className="text-xs font-bold text-[#d4af37] uppercase tracking-widest">Forest Dept. Authorized Service</span>
+              <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white mt-1">
+                Jungle Safari Permit & Gypsy Booking Engine
+              </h2>
+              <p className="text-sm text-gray-300 mt-2">
+                Configure your vehicle, park zone, and timing. Wildexoticventure secures government permits directly. For instant allocations, call <strong className="text-[#d4af37]">{AGENCY_PHONE_DISPLAY}</strong>.
+              </p>
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Form Controls */}
+              <div className="lg:col-span-7 space-y-6">
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#d4af37] block mb-2">
+                    1. Select Wildlife Sanctuary / National Park
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {Object.keys(SAFARI_ZONES_CONFIG).map((pKey) => (
+                      <button
+                        key={pKey}
+                        onClick={() => handleSafariParkChange(pKey)}
+                        className={`px-3 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition text-center border ${
+                          safariPark === pKey
+                            ? 'bg-[#d4af37] text-[#071711] border-[#d4af37] shadow-md shadow-[#d4af37]/20'
+                            : 'bg-[#0a2016] text-gray-300 border-[#1c422f] hover:border-gray-500'
+                        }`}
+                      >
+                        {pKey}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#d4af37] block mb-2">
+                    2. Select Protected Gate / Safari Zone
+                  </label>
+                  <select
+                    value={safariZone}
+                    onChange={(e) => setSafariZone(e.target.value)}
+                    className="w-full bg-[#081b12] border border-[#204935] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#d4af37]"
+                  >
+                    {SAFARI_ZONES_CONFIG[safariPark]?.gates.map((g) => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#d4af37] block mb-2">
+                    3. Select Safari Slot
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <button
+                      onClick={() => setSafariSlot('morning')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        safariSlot === 'morning'
+                          ? 'bg-[#153e2a] border-[#d4af37] text-white ring-1 ring-[#d4af37]'
+                          : 'bg-[#081a12] border-[#1c402e] text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase text-[#d4af37]">
+                        <Clock className="w-3.5 h-3.5" /> Morning Dawn
+                      </div>
+                      <div className="text-[11px] mt-1 text-gray-300">05:45 AM - 10:00 AM</div>
+                      <div className="text-[10px] text-green-400 mt-1">High Sighting Ratio</div>
+                    </button>
+
+                    <button
+                      onClick={() => setSafariSlot('afternoon')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        safariSlot === 'afternoon'
+                          ? 'bg-[#153e2a] border-[#d4af37] text-white ring-1 ring-[#d4af37]'
+                          : 'bg-[#081a12] border-[#1c402e] text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase text-[#d4af37]">
+                        <Clock className="w-3.5 h-3.5" /> Dusk Safari
+                      </div>
+                      <div className="text-[11px] mt-1 text-gray-300">03:00 PM - 06:15 PM</div>
+                      <div className="text-[10px] text-[#d4af37] mt-1">Golden Hour Light</div>
+                    </button>
+
+                    <button
+                      onClick={() => setSafariSlot('night')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        safariSlot === 'night'
+                          ? 'bg-[#153e2a] border-[#d4af37] text-white ring-1 ring-[#d4af37]'
+                          : 'bg-[#081a12] border-[#1c402e] text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase text-[#d4af37]">
+                        <Clock className="w-3.5 h-3.5" /> Night Buffer
+                      </div>
+                      <div className="text-[11px] mt-1 text-gray-300">07:00 PM - 09:30 PM</div>
+                      <div className="text-[10px] text-blue-300 mt-1">Nocturnal Predators</div>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-[#d4af37] block mb-2">
+                      Vehicle Type
+                    </label>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSafariVehicle('gypsy')}
+                        className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold border ${
+                          safariVehicle === 'gypsy'
+                            ? 'bg-[#184630] border-[#d4af37] text-white'
+                            : 'bg-[#081b12] border-[#1c402e] text-gray-400'
+                        }`}
+                      >
+                        Exclusive 4x4 Gypsy
+                      </button>
+                      <button
+                        onClick={() => setSafariVehicle('canter')}
+                        className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold border ${
+                          safariVehicle === 'canter'
+                            ? 'bg-[#184630] border-[#d4af37] text-white'
+                            : 'bg-[#081b12] border-[#1c402e] text-gray-400'
+                        }`}
+                      >
+                        Canter Safari
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-[#d4af37] block mb-2">
+                      Expedition Naturalist
+                    </label>
+                    <button
+                      onClick={() => setNaturalistAddon(!naturalistAddon)}
+                      className={`w-full py-2.5 px-3 rounded-xl text-xs font-semibold border flex items-center justify-between ${
+                        naturalistAddon
+                          ? 'bg-[#184630] border-[#d4af37] text-[#d4af37]'
+                          : 'bg-[#081b12] border-[#1c402e] text-gray-400'
+                      }`}
+                    >
+                      <span>Master Tracker Included</span>
+                      <CheckCircle2 className={`w-4 h-4 ${naturalistAddon ? 'text-[#d4af37]' : 'text-gray-600'}`} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Estimate & Action Card */}
+              <div className="lg:col-span-5 bg-[#091e14] border border-[#234e38] rounded-2xl p-6 shadow-xl space-y-5">
+                <div className="flex items-center justify-between border-b border-[#1b3d2c] pb-4">
+                  <div>
+                    <span className="text-xs text-gray-400 uppercase tracking-widest">Selected Reserve</span>
+                    <h3 className="font-serif text-lg font-bold text-white capitalize">{safariPark} Tiger Reserve</h3>
+                  </div>
+                  <div className="p-2 bg-[#123624] text-[#d4af37] rounded-lg">
+                    <Compass className="w-5 h-5" />
+                  </div>
+                </div>
+
+                <div className="space-y-2.5 text-xs text-gray-300">
+                  <div className="flex justify-between py-1 border-b border-[#143223]">
+                    <span className="text-gray-400">Chosen Zone / Gate</span>
+                    <span className="font-semibold text-white">{safariZone}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-[#143223]">
+                    <span className="text-gray-400">Time Window</span>
+                    <span className="font-semibold text-white capitalize">{safariSlot} Window</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-[#143223]">
+                    <span className="text-gray-400">Permit & Vehicle Type</span>
+                    <span className="font-semibold text-white">{safariVehicle === 'gypsy' ? 'Open Gypsy (Private)' : 'Canter'}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-[#143223]">
+                    <span className="text-gray-400">Master Naturalist</span>
+                    <span className="font-semibold text-[#d4af37]">{naturalistAddon ? 'Included (Priority)' : 'Standard Park Guide'}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-[#143223]">
+                    <span className="text-gray-400">Direct Booking Officer</span>
+                    <span className="font-mono text-[#d4af37] font-semibold">{AGENCY_PHONE_DISPLAY}</span>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex items-baseline justify-between">
+                  <div>
+                    <span className="text-xs text-gray-400">Estimated Total Rate</span>
+                    <div className="text-2xl font-serif font-bold text-[#d4af37]">
+                      ₹{currentSafariRate.toLocaleString()}
+                    </div>
+                  </div>
+                  <span className="text-[11px] text-emerald-400 font-medium">Permit Pre-Lock Available</span>
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <button
+                    onClick={() => handleSendWhatsApp({ type: 'safari_engine' })}
+                    className="w-full py-3 rounded-xl bg-[#25d366] hover:bg-[#20ba59] text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Book via WhatsApp ({AGENCY_PHONE_DISPLAY})
+                  </button>
+                  <a
+                    href={`tel:+91${AGENCY_PHONE_RAW}`}
+                    className="w-full py-2.5 rounded-xl bg-[#143b27] hover:bg-[#1b4d34] border border-[#d4af37]/40 text-white font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition"
+                  >
+                    <PhoneCall className="w-4 h-4 text-[#d4af37]" /> Call Concierge Directly
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {}
+        {(activeTab === 'all' || activeTab === 'resorts') && (
+          <section className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#173a28] pb-4">
+              <div>
+                <span className="text-xs font-bold text-[#d4af37] uppercase tracking-widest">Handcrafted Forest Living</span>
+                <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white mt-1">
+                  Exclusive Jungle Lodges & Tree Machans
+                </h2>
+                <p className="text-sm text-gray-300 mt-1">
+                  Private plunge pools, open-air stargazing decks, and fine dining surrounded by wilderness.
+                </p>
+              </div>
+              <div className="text-xs text-gray-400">
+                Direct Inquiries: <span className="text-[#d4af37] font-bold font-mono">{AGENCY_PHONE_DISPLAY}</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {filteredResorts.map((resort) => (
+                <div
+                  key={resort.id}
+                  className="bg-[#0b2217] border border-[#1d4330] rounded-2xl overflow-hidden hover:border-[#d4af37]/60 transition-all duration-300 shadow-xl group flex flex-col"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <img
+                      src={resort.coverImg}
+                      alt={resort.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3 left-3 bg-[#071911]/85 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium text-[#d4af37] border border-[#d4af37]/30">
+                      {resort.tag}
+                    </div>
+                    <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-semibold text-white flex items-center gap-1">
+                      <Star className="w-3.5 h-3.5 text-[#d4af37] fill-current" />
+                      <span>{resort.rating}</span>
+                      <span className="text-gray-400">({resort.reviewsCount})</span>
+                    </div>
+                    <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-xs text-white bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-md">
+                      <MapPin className="w-3.5 h-3.5 text-[#d4af37]" />
+                      <span>{resort.parkName}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                    <div>
+                      <h3 className="font-serif text-xl font-bold text-white group-hover:text-[#d4af37] transition">
+                        {resort.title}
+                      </h3>
+                      <p className="text-xs text-gray-300 mt-2 line-clamp-2 leading-relaxed">
+                        {resort.desc}
+                      </p>
+
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {resort.amenities.slice(0, 3).map((amenity, idx) => (
+                          <span
+                            key={idx}
+                            className="text-[11px] px-2.5 py-1 rounded-md bg-[#102b1e] text-[#cfdad4] border border-[#1b3d2c]"
+                          >
+                            {amenity}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-[#183d2a] flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] uppercase text-gray-400 block tracking-wider">Tariff from</span>
+                        <div className="text-xl font-serif font-bold text-[#d4af37]">
+                          ₹{resort.pricePerNight.toLocaleString()}{' '}
+                          <span className="text-xs text-gray-400 font-sans font-normal">/ Night</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => setDetailModalItem(resort)}
+                          className="px-3.5 py-2 rounded-xl bg-[#133324] hover:bg-[#1a4430] text-xs font-semibold text-gray-200 transition"
+                        >
+                          Details
+                        </button>
+                        <button
+                          onClick={() => handleOpenBooking(resort)}
+                          className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#b38f28] hover:brightness-110 text-black text-xs font-bold uppercase tracking-wider transition shadow-md shadow-[#d4af37]/20"
+                        >
+                          Reserve
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {}
+        {(activeTab === 'all' || activeTab === 'packages') && (
+          <section className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#173a28] pb-4">
+              <div>
+                <span className="text-xs font-bold text-[#d4af37] uppercase tracking-widest">Complete All-Inclusive Retreats</span>
+                <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white mt-1">
+                  Royal Tailormade Wildlife Expeditions
+                </h2>
+                <p className="text-sm text-gray-300 mt-1">
+                  Full itinerary: Private 5-star lodge, multiple open safaris, transfers, and high teas.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {filteredPackages.map((pkg) => (
+                <div
+                  key={pkg.id}
+                  className="bg-[#0a2016] border border-[#1e4632] rounded-2xl overflow-hidden hover:border-[#d4af37]/70 transition-all duration-300 shadow-xl flex flex-col justify-between"
+                >
+                  <div className="relative h-52">
+                    <img
+                      src={pkg.coverImg}
+                      alt={pkg.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-3 left-3 bg-[#081a12]/90 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold text-[#d4af37] border border-[#d4af37]/40 uppercase tracking-wider">
+                      {pkg.badge}
+                    </div>
+                    <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded text-xs text-white flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-[#d4af37]" />
+                      <span>{pkg.duration}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div>
+                      <span className="text-xs text-[#d4af37] font-semibold">{pkg.parkName}</span>
+                      <h3 className="font-serif text-lg font-bold text-white mt-1 leading-snug">
+                        {pkg.title}
+                      </h3>
+                      <p className="text-xs text-gray-300 mt-2">{pkg.desc}</p>
+
+                      <div className="mt-4 space-y-1.5">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 block">Package Inclusions:</span>
+                        {pkg.highlights.map((h, i) => (
+                          <div key={i} className="flex items-start gap-1.5 text-xs text-gray-300">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37] shrink-0 mt-0.5" />
+                            <span>{h}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-[#173a28] flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] text-gray-400 uppercase">Expedition Price</span>
+                        <div className="text-lg font-serif font-bold text-[#d4af37]">
+                          ₹{pkg.price.toLocaleString()}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleOpenBooking(pkg)}
+                        className="px-4 py-2 rounded-xl bg-[#d4af37] hover:bg-[#bfa035] text-black text-xs font-bold uppercase tracking-wider transition"
+                      >
+                        Customize
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {}
+        <section className="bg-[#091f15] border border-[#1c422f] rounded-3xl p-8 sm:p-12 text-center space-y-4">
+          <span className="text-xs font-bold text-[#d4af37] uppercase tracking-widest">Guest Recollections</span>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white">
+            "A Flawless Wildlife Journey with Wildexoticventure"
+          </h2>
+          <div className="max-w-3xl mx-auto text-gray-300 text-sm sm:text-base italic leading-relaxed">
+            "Wildexoticventure organized our Bandhavgarh Tala VIP permit and private tree villa within 24 hours. Directly calling {AGENCY_PHONE_DISPLAY} gave us instant answers without waiting for slow emails. We spotted three tigers and a leopard!"
+          </div>
+          <div className="flex items-center justify-center space-x-1 text-[#d4af37]">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className="w-4 h-4 fill-current" />
+            ))}
+          </div>
+          <p className="text-xs font-semibold text-white uppercase tracking-wider">
+            Vikram Singhania & Family — New Delhi
+          </p>
+
+          <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href={`tel:+91${AGENCY_PHONE_RAW}`}
+              className="px-5 py-2.5 rounded-full bg-[#143b27] border border-[#d4af37] text-white text-xs font-bold flex items-center gap-2 hover:bg-[#1f563a] transition"
+            >
+              <PhoneCall className="w-4 h-4 text-[#d4af37]" /> Speak With Founder: {AGENCY_PHONE_DISPLAY}
+            </a>
+            <button
+              onClick={() => handleSendWhatsApp({ type: 'general' })}
+              className="px-5 py-2.5 rounded-full bg-[#25d366] text-black text-xs font-bold flex items-center gap-2 hover:brightness-105 transition"
+            >
+              <MessageCircle className="w-4 h-4 fill-current" /> WhatsApp Inquiry
+            </button>
+          </div>
+        </section>
+      </main>
+
+      {}
+      <footer className="bg-[#05110c] border-t border-[#173726] pt-12 pb-8 px-4 sm:px-6 lg:px-8 text-xs text-gray-400">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          <div className="space-y-3">
+            <div className="font-serif tracking-widest text-lg font-bold uppercase text-white">
+              Wild<span className="text-[#d4af37]">exotic</span>venture
+            </div>
+            <p className="leading-relaxed text-gray-400">
+              India’s premier wildlife expedition and luxury jungle resort booking agency. Focused on Kanha, Bandhavgarh, Pench, Ranthambore, and Corbett reserves.
+            </p>
+            <div className="pt-2 text-white font-mono flex flex-col gap-1">
+              <span className="text-[#d4af37] text-[11px] uppercase tracking-wider font-sans font-bold">Direct Booking Hotline:</span>
+              <a href={`tel:+91${AGENCY_PHONE_RAW}`} className="text-sm font-bold text-white hover:text-[#d4af37] flex items-center gap-1.5">
+                <Phone className="w-4 h-4 text-[#d4af37]" /> {AGENCY_PHONE_DISPLAY}
+              </a>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="font-bold uppercase tracking-wider text-white text-xs">Featured National Parks</h4>
+            <ul className="space-y-1.5 text-gray-400">
+              <li><button onClick={() => setSelectedPark('bandhavgarh')} className="hover:text-[#d4af37]">Bandhavgarh Tiger Reserve (Tala / Magadhi)</button></li>
+              <li><button onClick={() => setSelectedPark('kanha')} className="hover:text-[#d4af37]">Kanha National Park (Mukki / Kisli)</button></li>
+              <li><button onClick={() => setSelectedPark('pench')} className="hover:text-[#d4af37]">Pench Tiger Reserve (Turia / Jamtara)</button></li>
+              <li><button onClick={() => setSelectedPark('ranthambore')} className="hover:text-[#d4af37]">Ranthambore National Park (Core 1-5)</button></li>
+              <li><button onClick={() => setSelectedPark('corbett')} className="hover:text-[#d4af37]">Jim Corbett (Dhikala / Bijrani)</button></li>
+            </ul>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="font-bold uppercase tracking-wider text-white text-xs">Wildexoticventure Concierge</h4>
+            <p className="text-gray-300">Desk Timings: 24/7 Priority Support for active safaris</p>
+            <p className="text-[#d4af37] font-mono font-bold text-sm">Direct Call: {AGENCY_PHONE_DISPLAY}</p>
+            <p className="text-gray-400">WhatsApp: +91 {AGENCY_PHONE_RAW}</p>
+            <p className="text-gray-400">Email: wildexoticventure@gmail.com</p>
+            <p className="text-gray-400">Madhya Pradesh & Rajasthan Operations Desk</p>
+          </div>
+
+          <div className="space-y-3">
+            <h4 className="font-bold uppercase tracking-wider text-white text-xs">Quick Leads & Permits</h4>
+            <p className="text-gray-400">Instant Gypsy and permit allocation assistance via WhatsApp or Call:</p>
+            <div className="space-y-2">
+              <button
+                onClick={() => handleSendWhatsApp({ type: 'general' })}
+                className="w-full py-2.5 rounded-xl bg-[#25d366] text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#20ba59] transition"
+              >
+                <MessageCircle className="w-4 h-4 fill-current" />
+                WhatsApp: {AGENCY_PHONE_RAW}
+              </button>
+              <a
+                href={`tel:+91${AGENCY_PHONE_RAW}`}
+                className="w-full py-2.5 rounded-xl bg-[#143a27] text-white border border-[#2b5940] font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#1a4a33] transition"
+              >
+                <PhoneCall className="w-4 h-4 text-[#d4af37]" />
+                Dial {AGENCY_PHONE_DISPLAY}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto pt-6 border-t border-[#122e20] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-gray-500">
+          <p>© {new Date().getFullYear()} Wildexoticventure Luxury Safaris. All rights reserved.</p>
+          <div className="flex space-x-6 text-gray-400">
+            <span>Permit Terms & Buffer Guidelines</span>
+            <span>Wildlife Conservation Partner</span>
+          </div>
+        </div>
+      </footer>
+
+      {}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#071911]/95 backdrop-blur-lg border-t border-[#1c4430] p-2.5 flex items-center gap-2">
+        <a
+          href={`tel:+91${AGENCY_PHONE_RAW}`}
+          className="flex-1 py-3 rounded-xl bg-[#133c28] border border-[#2d6347] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg"
+        >
+          <PhoneCall className="w-4 h-4 text-[#d4af37]" /> Call {AGENCY_PHONE_RAW}
+        </a>
+        <button
+          onClick={() => handleSendWhatsApp({ type: 'general' })}
+          className="flex-1 py-3 rounded-xl bg-[#25d366] text-black font-bold text-xs flex items-center justify-center gap-2 shadow-lg"
+        >
+          <MessageCircle className="w-4 h-4 fill-current" /> WhatsApp Us
+        </button>
+      </div>
+
+      {}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#0a2217] border border-[#23523a] rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setModalOpen(false)}
+              className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-white rounded-lg bg-[#102b1f]"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {bookingSuccess ? (
+              <div className="text-center py-8 space-y-4">
+                <div className="w-16 h-16 rounded-full bg-[#184630] border border-[#d4af37] text-[#d4af37] flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <h3 className="font-serif text-2xl font-bold text-white">Inquiry Received!</h3>
+                <p className="text-xs text-gray-300 max-w-sm mx-auto">
+                  Thank you, <span className="text-[#d4af37] font-semibold">{guestName}</span>. Your request has been forwarded to Wildexoticventure’s lead naturalist. We will call you on <span className="text-white font-mono font-bold">{guestPhone}</span> shortly.
+                </p>
+                <div className="p-3 bg-[#081b12] rounded-xl border border-[#1b3f2c] text-xs text-gray-300">
+                  <span>Need an immediate permit lock? Call our team: </span>
+                  <a href={`tel:+91${AGENCY_PHONE_RAW}`} className="text-[#d4af37] font-bold font-mono underline block mt-1">
+                    {AGENCY_PHONE_DISPLAY}
+                  </a>
+                </div>
+                <div className="pt-2 flex flex-col gap-2">
+                  <button
+                    onClick={() => handleSendWhatsApp(modalItem)}
+                    className="w-full py-3 rounded-xl bg-[#25d366] text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle className="w-4 h-4 fill-current" />
+                    Send Details on WhatsApp
+                  </button>
+                  <button
+                    onClick={() => setModalOpen(false)}
+                    className="w-full py-2.5 rounded-xl bg-[#143926] text-gray-300 text-xs font-semibold"
+                  >
+                    Close Window
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#d4af37]">VIP Reservation Inquiry</span>
+                <h3 className="font-serif text-xl font-bold text-white mt-1">
+                  {modalItem?.title || 'Bespoke Wildlife Safari'}
+                </h3>
+                <p className="text-xs text-gray-400 mt-1">
+                  Wildexoticventure Concierge: <a href={`tel:+91${AGENCY_PHONE_RAW}`} className="text-[#d4af37] font-mono font-semibold">{AGENCY_PHONE_DISPLAY}</a>
+                </p>
+
+                <form onSubmit={handleSubmitInquiry} className="mt-6 space-y-4 text-xs">
+                  <div>
+                    <label className="block text-gray-300 font-semibold mb-1">Your Full Name *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Aditi Sharma"
+                      value={guestName}
+                      onChange={(e) => setGuestName(e.target.value)}
+                      className="w-full bg-[#061710] border border-[#1a4430] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#d4af37]"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-gray-300 font-semibold mb-1">Phone Number (WhatsApp) *</label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="+91 98765 43210"
+                        value={guestPhone}
+                        onChange={(e) => setGuestPhone(e.target.value)}
+                        className="w-full bg-[#061710] border border-[#1a4430] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#d4af37]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-300 font-semibold mb-1">Email Address</label>
+                      <input
+                        type="email"
+                        placeholder="you@email.com"
+                        value={guestEmail}
+                        onChange={(e) => setGuestEmail(e.target.value)}
+                        className="w-full bg-[#061710] border border-[#1a4430] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#d4af37]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-gray-300 font-semibold mb-1">Dates</label>
+                      <input
+                        type="date"
+                        value={searchDate}
+                        onChange={(e) => setSearchDate(e.target.value)}
+                        className="w-full bg-[#061710] border border-[#1a4430] rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-[#d4af37]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-300 font-semibold mb-1">Guests</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        value={guestCount}
+                        onChange={(e) => setGuestCount(Number(e.target.value))}
+                        className="w-full bg-[#061710] border border-[#1a4430] rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-[#d4af37]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-300 font-semibold mb-1">Special Preferences (Machan / Buffer / Meals)</label>
+                    <textarea
+                      rows="2"
+                      placeholder="e.g. Need Tala Core zone morning permit & private Gypsy naturalist..."
+                      value={customNote}
+                      onChange={(e) => setCustomNote(e.target.value)}
+                      className="w-full bg-[#061710] border border-[#1a4430] rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-[#d4af37]"
+                    ></textarea>
+                  </div>
+
+                  <div className="pt-2 space-y-2">
+                    <button
+                      type="submit"
+                      className="w-full py-3 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#b38f28] hover:brightness-110 text-black font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-[#d4af37]/20"
+                    >
+                      Submit Booking Inquiry
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSendWhatsApp(modalItem)}
+                      className="w-full py-2.5 rounded-xl bg-[#25d366]/20 hover:bg-[#25d366]/30 border border-[#25d366]/40 text-[#4ade80] font-semibold text-xs flex items-center justify-center gap-1.5 transition"
+                    >
+                      <MessageCircle className="w-4 h-4" /> Send Instant WhatsApp Lead ({AGENCY_PHONE_RAW})
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {}
+      {detailModalItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+          <div className="bg-[#0b2419] border border-[#23543b] rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setDetailModalItem(null)}
+              className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-white rounded-lg bg-[#123826]"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="space-y-4">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#d4af37]">{detailModalItem.tag}</span>
+              <h3 className="font-serif text-2xl font-bold text-white">{detailModalItem.title}</h3>
+
+              <div className="grid grid-cols-2 gap-2 rounded-xl overflow-hidden">
+                {detailModalItem.gallery?.map((img, i) => (
+                  <img key={i} src={img} alt="Resort" className="h-40 w-full object-cover" />
+                ))}
+              </div>
+
+              <p className="text-xs text-gray-300 leading-relaxed">{detailModalItem.desc}</p>
+
+              <div>
+                <h4 className="text-xs font-bold uppercase text-[#d4af37] tracking-wider mb-2">Exclusive Amenities Included</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  {detailModalItem.amenities.map((a, i) => (
+                    <div key={i} className="flex items-center gap-2 text-gray-200 bg-[#071911] p-2 rounded-lg border border-[#193d2b]">
+                      <Sparkles className="w-3.5 h-3.5 text-[#d4af37]" />
+                      <span>{a}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-[#183d2a] flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-gray-400 uppercase">Tariff from</span>
+                  <div className="text-xl font-serif font-bold text-[#d4af37]">
+                    ₹{detailModalItem.pricePerNight?.toLocaleString()} / night
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`tel:+91${AGENCY_PHONE_RAW}`}
+                    className="p-2.5 rounded-xl bg-[#143c29] text-white border border-[#2b5d43] hover:text-[#d4af37] transition"
+                    title="Call agency"
+                  >
+                    <Phone className="w-4 h-4" />
+                  </a>
+                  <button
+                    onClick={() => {
+                      const item = detailModalItem;
+                      setDetailModalItem(null);
+                      handleOpenBooking(item);
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-[#d4af37] text-black font-bold text-xs uppercase tracking-wider hover:brightness-110 transition"
+                  >
+                    Reserve Suite
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
